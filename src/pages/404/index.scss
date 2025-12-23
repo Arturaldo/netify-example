@@ -1,0 +1,26 @@
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #111;
+}
+
+.error-page__code {
+  font-size: 40px;
+  font-weight: 600;
+  margin-bottom: 28px;
+}
+
+.error-page__text {
+  font-size: 16px;
+  margin-bottom: 44px;
+}
+
+.error-page__link {
+  font-size: 14px;
+  color: #007aff;
+  text-decoration: none;
+}

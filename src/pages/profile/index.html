@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Профиль</title>
+  <link rel="stylesheet" href="../../assets/scss/collect.scss">
+  <link rel="stylesheet" href="./index.scss">
+</head>
+<body>
+  <div class="profile">
+    <aside class="profile__sidebar">
+      <a href="../chat/index.html" class="profile__back-button">←</a>
+    </aside>
+
+    <main class="profile__content">
+      <div class="profile__avatar-block">
+        <div class="profile__avatar">
+          {{#if avatar}}
+            <img src="{{avatar}}" alt="Аватар пользователя {{displayName}}">
+          {{else}}
+            <span class="profile__avatar-placeholder"></span>
+          {{/if}}
+        </div>
+        <div class="profile__name">{{displayName}}</div>
+      </div>
+
+      <div class="profile__info">
+        {{#each fields}}
+          <div class="profile__row">
+            <div class="profile__row-label">{{label}}</div>
+            <div class="profile__row-value">{{value}}</div>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="profile__actions">
+        <a href="./edit.html" class="profile__action-link">Изменить данные</a>
+        <a href="./password.html" class="profile__action-link">Изменить пароль</a>
+        <button class="profile__logout" type="button">Выйти</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

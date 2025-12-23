@@ -1,0 +1,95 @@
+@font-face {
+    font-family: 'GothamPro';
+    src: url('@/assets/fonts/GothamProLight.ttf') format('truetype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'GothamPro';
+    src: url('@/assets/fonts/GothamProRegular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'GothamPro';
+    src: url('@/assets/fonts/GothamProMedium.ttf') format('truetype');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'GothamPro';
+    src: url('@/assets/fonts/GothamProBold.ttf') format('truetype');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('@/assets/fonts/UbuntuLight.ttf') format('truetype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-ultralight.ttf') format('truetype');
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-thin.ttf') format('truetype');
+    font-weight: 200;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-light.ttf') format('truetype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-medium.ttf') format('truetype');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-semibold.ttf') format('truetype');
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-bold.ttf') format('truetype');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'SF UI Display';
+    src: url('@/assets/fonts/sf-ui-display-black.ttf') format('truetype');
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('@/assets/fonts/UbuntuRegular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('@/assets/fonts/UbuntuMedium.ttf') format('truetype');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('@/assets/fonts/UbuntuBold.ttf') format('truetype');
+    font-weight: 700;
+}

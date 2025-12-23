@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="../../assets/scss/collect.scss">
+  <link rel="stylesheet" href="./index.scss">
+</head>
+<body>
+  <div class="register__container">
+    <h1>Регистрация</h1>
+
+    <form class="register__container__form">
+      <input
+        type="text"
+        name="first_name"
+        placeholder="Имя"
+        class="register__container__form__input"
+        required
+      >
+      <input
+        type="text"
+        name="second_name"
+        placeholder="Фамилия"
+        class="register__container__form__input"
+        required
+      >
+      <input
+        type="text"
+        name="login"
+        placeholder="Логин"
+        class="register__container__form__input"
+        required
+      >
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        class="register__container__form__input"
+        required
+      >
+      <input
+        type="password"
+        name="password"
+        placeholder="Пароль"
+        class="register__container__form__input"
+        required
+      >
+      <input
+        type="tel"
+        name="phone"
+        placeholder="Телефон"
+        class="register__container__form__input"
+        required
+      >
+
+      {{> button
+          type="submit"
+          label="Зарегистрироваться"
+          className="register__container__submit"
+      }}
+    </form>
+
+    <a href="/src/pages/auth/index.html">Уже есть аккаунт?</a>
+  </div>
+</body>
+</html>
