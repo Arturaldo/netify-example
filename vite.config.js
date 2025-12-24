@@ -41,6 +41,8 @@ export default defineConfig({
         register: resolve(__dirname, 'src/pages/register/index.html'),
         chat: resolve(__dirname, 'src/pages/chat/index.html'),
         profile: resolve(__dirname, 'src/pages/profile/index.html'),
+        profileEdit: resolve(__dirname, 'src/pages/profile/edit.html'),
+        profilePassword: resolve(__dirname, 'src/pages/profile/password.html'),
         404: resolve(__dirname, 'src/pages/404/index.html'),
         500: resolve(__dirname, 'src/pages/500/index.html'),
       },
