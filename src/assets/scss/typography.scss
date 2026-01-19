@@ -1,0 +1,123 @@
+body {
+    color: var(--color-main-12);
+    font-family: 'SF UI Display', Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 140%;
+    overflow: hidden;
+}
+
+.display-xl {
+    font-size: 18px;
+    line-height: 140%;
+}
+.display-medium {
+    font-size: 16px;
+    line-height: 140%;
+}
+.display-big {
+    font-size: 14px;
+    line-height: 140%;
+}
+.display-secondary {
+    font-size: 12px;
+    line-height: 140%;
+}
+.display-bold {
+    font-weight: 500;
+}
+
+.display-small {
+    font-size: 13px;
+    line-height: 140%;
+}
+
+.display-tiny {
+    font-size: 10px;
+    line-height: 140%;
+}
+
+.display-min {
+    font-size: 8px;
+    line-height: 140%;
+}
+
+.font-small {
+    font-size: 11px;
+    line-height: 140%;
+    font-family: Ubuntu, Arial, Helvetica, sans-serif;
+}
+
+.font-secondary {
+    color: var(--color-main-8);
+}
+.font-gray {
+    color: var(--color-main-3);
+}
+.font-black {
+    color: var(--color-main-12);
+}
+.font-white {
+    color: var(--color-main-f);
+}
+.font-lite-gray {
+    color: var(--color-main-8);
+}
+.font-danger {
+    color: var(--color-main-5);
+}
+.pointer {
+    cursor: pointer;
+}
+.z-index {
+    z-index: 2;
+}
+.text-margin-botton-x2 {
+    margin-bottom: var(--margin-x2);
+}
+.font-weight-m {
+    font-weight: 500;
+}
+.font-weight-b {
+    font-weight: 600;
+}
+.font-weight-h {
+    font-weight: 700;
+}
+
+/** Extra Extra Small (xxsm) **/
+@media (min-width: 380px) {
+}
+
+/** Extra Small (xsm) **/
+@media (min-width: 420px) {
+}
+
+/** Small (sm) **/
+@media (min-width: 576px) {
+}
+
+/** Medium (md) **/
+@media (min-width: 768px) {
+}
+
+/** Large (lg) **/
+@media (min-width: 992px) {
+}
+
+/** Extra large (xl) **/
+@media (min-width: 1200px) {
+}
+
+/** Extra extra large (xxl) **/
+@media (min-width: 1400px) {
+}
+
+/** Super large (sl) **/
+@media (min-width: 2500px) {
+}
+
+/** Super extra large (sel) **/
+@media (min-width: 3400px) {
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход</title>
+    <link rel="stylesheet" href="../../assets/scss/collect.scss">
+    <link rel="stylesheet" href="./index.scss">
+</head>
+<body>
+  <div class="auth__container">
+    <h1>Вход</h1>
+    <form class="auth__container__form">
+      <input
+        type="text"
+        name="login"
+        placeholder="Логин"
+        class="auth__container__form__input"
+        required
+      >
+      <input
+        type="password"
+        name="password"
+        placeholder="Пароль"
+        class="auth__container__form__input"
+        required
+      >
+
+      <button class="auth__container__submit" type="submit">
+        Войти
+      </button>
+    </form>
+
+    <a href="/src/pages/register/index.html">Нет аккаунта?</a>
+  </div>
+</body>
+</html>

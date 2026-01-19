@@ -1,0 +1,20 @@
+{
+  "name": "chat-buravlev",
+  "version": "1.0.0",
+  "description": "Messenger project with Vite and Handlebars",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "handlebars": "^4.7.8",
+    "sass": "^1.97.1",
+    "vite": "^5.0.0",
+    "vite-plugin-handlebars": "^2.0.0"
+  }
+}
