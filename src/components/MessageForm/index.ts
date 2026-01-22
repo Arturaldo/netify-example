@@ -7,20 +7,10 @@ interface MessageFormProps extends BlockProps {
   onSubmit?: (message: string) => void;
 }
 
-/**
- * Пример компонента с использованием Handlebars шаблонизации.
- *
- * Преимущества:
- * 1. Шаблон декларативен — видно структуру компонента
- * 2. Дочерние компоненты вставляются автоматически через {{{ name }}}
- * 3. Не нужен ручной код в componentDidMount для замены плейсхолдеров
- */
 export class MessageForm extends Block<MessageFormProps> {
   constructor(props: MessageFormProps) {
-    // Создаём дочерние компоненты и передаём их в super() через props
     super('form', {
       ...props,
-      // Дочерние компоненты — Block автоматически выделит их в this.children
       messageInput: new Input({
         name: 'message',
         type: 'text',
@@ -64,11 +54,6 @@ export class MessageForm extends Block<MessageFormProps> {
     }
   }
 
-  /**
-   * Используем compile() для рендеринга с Handlebars.
-   * {{{ messageInput }}} и {{{ sendButton }}} — это дочерние компоненты,
-   * которые автоматически заменятся на реальные DOM-элементы.
-   */
   render(): DocumentFragment {
     return this.compile(`
       {{{ messageInput }}}

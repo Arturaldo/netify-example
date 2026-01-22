@@ -11,7 +11,6 @@ interface FormProps extends BlockProps {
 
 export class Form extends Block<FormProps> {
   constructor(props: FormProps) {
-    // ВАЖНО: вытаскиваем ТОЛЬКО button, inputs оставляем в rest
     const { button, ...rest } = props;
 
     super('form', {
@@ -21,7 +20,6 @@ export class Form extends Block<FormProps> {
       },
     });
 
-    // Возвращаем кнопку в props руками (она ещё и в children будет, это не мешает)
     (this.props as FormProps).button = button;
   }
 

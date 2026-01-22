@@ -29,9 +29,6 @@ export class Input extends Block<InputProps> {
   private _handleInput(e: Event): void {
     const target = e.target as HTMLInputElement;
     if (target.tagName !== 'INPUT') return;
-
-    // НИЧЕГО не пишем в this.props, иначе ловим перерендер
-    // значение берём из DOM в getValue()
   }
 
   private _handleBlur(e: FocusEvent): void {
@@ -75,8 +72,6 @@ export class Input extends Block<InputProps> {
     if (inputEl) {
       inputEl.classList.add('input--error');
     }
-
-    // НЕ трогаем this.props.error, иначе Proxy спровоцирует перерендер
   }
 
   private _hideError(): void {
@@ -91,8 +86,6 @@ export class Input extends Block<InputProps> {
     if (inputEl) {
       inputEl.classList.remove('input--error');
     }
-
-    // Тут тоже не трогаем this.props.error
   }
 
   public getValue(): string {
@@ -104,7 +97,6 @@ export class Input extends Block<InputProps> {
     const input = this.element?.querySelector('input') as HTMLInputElement;
     if (input) {
       input.value = value;
-      // опять же, this.props.value лучше не трогать во время жизни компонента
     }
   }
 

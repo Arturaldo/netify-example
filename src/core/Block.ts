@@ -137,38 +137,9 @@ export abstract class Block<P extends BlockProps = BlockProps> {
     this._addEvents();
   }
 
-  /**
-   * Компилирует Handlebars шаблон и автоматически вставляет дочерние компоненты.
-   *
-   * В шаблоне используйте плейсхолдеры {{{ childName }}} для вставки компонентов.
-   *
-   * @example
-   * // В конструкторе компонента:
-   * this.children.input = new Input({ name: 'email' });
-   * this.children.button = new Button({ text: 'Submit' });
-   *
-   * // В render():
-   * return this.compile(`
-   *   <div class="form">
-   *     {{{ input }}}
-   *     {{{ button }}}
-   *   </div>
-   * `, { title: 'My Form' });
-   *
-   * // Для массивов компонентов (например, список сообщений):
-   * this.children.messages = messages.map(m => new Message(m));
-   *
-   * // В шаблоне:
-   * return this.compile(`
-   *   <div class="chat">
-   *     {{{ messages }}}
-   *   </div>
-   * `);
-   */
   protected compile(template: string, context: Record<string, unknown> = {}): DocumentFragment {
     const propsAndStubs: Record<string, unknown> = { ...context };
 
-    // Создаём стабы (плейсхолдеры) для дочерних компонентов
     Object.entries(this.children).forEach(([key, child]) => {
       if (Array.isArray(child)) {
         propsAndStubs[key] = child
@@ -179,15 +150,12 @@ export abstract class Block<P extends BlockProps = BlockProps> {
       }
     });
 
-    // Компилируем шаблон с Handlebars
     const compiledTemplate = Handlebars.compile(template);
     const html = compiledTemplate(propsAndStubs);
 
-    // Создаём DocumentFragment из HTML
     const fragment = document.createElement('template');
     fragment.innerHTML = html;
 
-    // Заменяем стабы на реальные DOM-элементы компонентов
     Object.values(this.children).forEach((child) => {
       if (Array.isArray(child)) {
         child.forEach((c) => {
@@ -207,7 +175,6 @@ export abstract class Block<P extends BlockProps = BlockProps> {
     return fragment.content;
   }
 
-  // Уникальный ID для каждого компонента (для стабов)
   private _id = Math.random().toString(36).substring(2, 9);
 
   protected abstract render(): string | HTMLElement | DocumentFragment;
