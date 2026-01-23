@@ -23,7 +23,7 @@ const emailInput = new Input({
   label: 'Почта',
   value: profileData.email,
   validationType: 'email',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const loginInput = new Input({
@@ -32,7 +32,7 @@ const loginInput = new Input({
   label: 'Логин',
   value: profileData.login,
   validationType: 'login',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const firstNameInput = new Input({
@@ -41,7 +41,7 @@ const firstNameInput = new Input({
   label: 'Имя',
   value: profileData.first_name,
   validationType: 'first_name',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const secondNameInput = new Input({
@@ -50,7 +50,7 @@ const secondNameInput = new Input({
   label: 'Фамилия',
   value: profileData.second_name,
   validationType: 'second_name',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const displayNameInput = new Input({
@@ -59,7 +59,7 @@ const displayNameInput = new Input({
   label: 'Имя в чате',
   value: profileData.display_name,
   validationType: 'display_name',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const phoneInput = new Input({
@@ -68,7 +68,7 @@ const phoneInput = new Input({
   label: 'Телефон',
   value: profileData.phone,
   validationType: 'phone',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const submitButton = new Button({

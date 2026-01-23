@@ -22,7 +22,7 @@ const oldPasswordInput = new Input({
   type: 'password',
   label: 'Старый пароль',
   validationType: 'oldPassword',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const newPasswordInput = new Input({
@@ -30,7 +30,7 @@ const newPasswordInput = new Input({
   type: 'password',
   label: 'Новый пароль',
   validationType: 'newPassword',
-  className: 'profile__row profile__row--input',
+  wrapperClassName: 'profile__row--input',
 });
 
 const submitButton = new Button({

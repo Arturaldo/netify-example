@@ -8,6 +8,7 @@ interface InputProps extends BlockProps {
   value?: string;
   validationType?: ValidationField;
   className?: string;
+  wrapperClassName?: string;
   label?: string;
   error?: string;
   onBlur?: (e: FocusEvent) => void;
@@ -128,6 +129,7 @@ export class Input extends Block<InputProps> {
       placeholder = '',
       value = '',
       className = '',
+      wrapperClassName = '',
       label = '',
       error = '',
     } = this.props;
@@ -137,7 +139,7 @@ export class Input extends Block<InputProps> {
       : '';
 
     return `
-      <div class="input-wrapper">
+      <div class="input-wrapper ${wrapperClassName}">
         ${labelHtml}
         <input
           class="input ${className} ${error ? 'input--error' : ''}"
