@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const app = document.querySelector('.app');
 
   if (app) {
-    const container = document.createElement('div');
+    const container = document.createElement('main');
     container.className = 'auth__container';
 
     const title = document.createElement('h1');

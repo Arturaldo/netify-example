@@ -163,13 +163,13 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+    box-shadow: 0 2px 8px rgb(0 122 255 / 25%);
   }
 
   .profile__primary-button:hover {
     background: #0060d0;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 4px 12px rgb(0 122 255 / 30%);
   }
 
   .profile__primary-button:active {

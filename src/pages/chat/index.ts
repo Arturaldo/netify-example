@@ -151,9 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const messagesHtml = chatPageData.messages.map(renderMessage).join('');
 
   app.innerHTML = `
-    <div class="chat__container">
-      <div class="chat__container__left-bar">
-        <div class="chat__container__left-bar__top-bar">
+    <main class="chat__container">
+      <aside class="chat__container__left-bar">
+        <header class="chat__container__left-bar__top-bar">
           <a href="../profile/index.html" class="top-bar__profile">
             <span class="display-secondary font-weight-b">Профиль</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -163,31 +163,31 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="top-bar__search">
             <input class="top-bar__search__input" type="text" placeholder="Поиск">
           </div>
-        </div>
+        </header>
 
-        <div class="chat__container__left-bar__content scrollable">
+        <section class="chat__container__left-bar__content scrollable">
           ${chatListHtml}
-        </div>
-      </div>
+        </section>
+      </aside>
 
-      <div class="chat__container__chat-content">
-        <div class="chat__container__chat-content__header">
+      <section class="chat__container__chat-content">
+        <header class="chat__container__chat-content__header">
           <div class="chat__chat-header-left">
             <div class="chat__chat-avatar"></div>
             <div class="chat__chat-name">${chatPageData.currentChat.name}</div>
           </div>
           <button class="chat__chat-menu" type="button">⋮</button>
-        </div>
+        </header>
 
         <div class="chat__chat-date">${chatPageData.currentChat.date}</div>
 
-        <div class="chat__container__chat-content__mini-chat">
+        <article class="chat__container__chat-content__mini-chat">
           ${messagesHtml}
-        </div>
+        </article>
 
-        <div class="chat__message-form-container"></div>
-      </div>
-    </div>
+        <footer class="chat__message-form-container"></footer>
+      </section>
+    </main>
   `;
 
   const messageForm = new MessageForm({

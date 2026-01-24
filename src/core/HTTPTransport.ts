@@ -1,4 +1,20 @@
-type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export enum HTTPMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+}
+
+export enum HTTPStatus {
+  OK = 200,
+  CREATED = 201,
+  NO_CONTENT = 204,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  INTERNAL_SERVER_ERROR = 500,
+}
 
 interface RequestOptions {
   method?: HTTPMethod;
@@ -40,23 +56,23 @@ export class HTTPTransport {
 
   get: HTTPMethodFunction = (url, options = {}) => {
     const queryStr = options.data ? queryStringify(options.data as Record<string, unknown>) : '';
-    return this.request(`${url}${queryStr}`, { ...options, method: 'GET' });
+    return this.request(`${url}${queryStr}`, { ...options, method: HTTPMethod.GET });
   };
 
   post: HTTPMethodFunction = (url, options = {}) => {
-    return this.request(url, { ...options, method: 'POST' });
+    return this.request(url, { ...options, method: HTTPMethod.POST });
   };
 
   put: HTTPMethodFunction = (url, options = {}) => {
-    return this.request(url, { ...options, method: 'PUT' });
+    return this.request(url, { ...options, method: HTTPMethod.PUT });
   };
 
   delete: HTTPMethodFunction = (url, options = {}) => {
-    return this.request(url, { ...options, method: 'DELETE' });
+    return this.request(url, { ...options, method: HTTPMethod.DELETE });
   };
 
   private request<R = unknown>(url: string, options: RequestOptions = {}): Promise<R> {
-    const { method = 'GET', headers = {}, data, timeout = 5000 } = options;
+    const { method = HTTPMethod.GET, headers = {}, data, timeout = 5000 } = options;
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -72,27 +88,27 @@ export class HTTPTransport {
       xhr.withCredentials = true;
       xhr.responseType = 'json';
 
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
+      xhr.onload = (): void => {
+        if (xhr.status >= HTTPStatus.OK && xhr.status < 300) {
           resolve(xhr.response as R);
         } else {
           reject(new Error(`HTTP Error: ${xhr.status} ${xhr.statusText}`));
         }
       };
 
-      xhr.onerror = () => {
+      xhr.onerror = (): void => {
         reject(new Error('Network error'));
       };
 
-      xhr.ontimeout = () => {
+      xhr.ontimeout = (): void => {
         reject(new Error('Request timeout'));
       };
 
-      xhr.onabort = () => {
+      xhr.onabort = (): void => {
         reject(new Error('Request aborted'));
       };
 
-      if (method === 'GET' || !data) {
+      if (method === HTTPMethod.GET || !data) {
         xhr.send();
       } else if (data instanceof FormData) {
         xhr.send(data);

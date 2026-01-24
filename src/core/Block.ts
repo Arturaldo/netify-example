@@ -1,9 +1,11 @@
 import Handlebars from 'handlebars';
 import { EventBus } from './EventBus';
 
+export type BlockEvent = MouseEvent | KeyboardEvent | FocusEvent | InputEvent | SubmitEvent | Event;
+
 export interface BlockProps {
   [key: string]: unknown;
-  events?: Record<string, (e: Event) => void>;
+  events?: Record<string, (e: BlockEvent) => void>;
 }
 
 export type BlockChildren = Record<string, Block | Block[]>;
@@ -21,10 +23,10 @@ export abstract class Block<P extends BlockProps = BlockProps> {
 
   protected props: P;
   protected children: BlockChildren;
-  private eventBus: () => EventBus;
+  private _eventBus: EventBus;
 
   constructor(tagName: string = 'div', propsWithChildren: P & { children?: BlockChildren } = {} as P) {
-    const eventBus = new EventBus();
+    this._eventBus = new EventBus();
 
     const { children, ...props } = this._getChildrenAndProps(propsWithChildren);
 
@@ -36,10 +38,12 @@ export abstract class Block<P extends BlockProps = BlockProps> {
     this.children = children;
     this.props = this._makePropsProxy(props as unknown as P);
 
-    this.eventBus = () => eventBus;
+    this._registerEvents(this._eventBus);
+    this._eventBus.emit(Block.EVENTS.INIT);
+  }
 
-    this._registerEvents(eventBus);
-    eventBus.emit(Block.EVENTS.INIT);
+  protected eventBus(): EventBus {
+    return this._eventBus;
   }
 
   private _getChildrenAndProps(propsWithChildren: P & { children?: BlockChildren }): { children: BlockChildren } & P {
@@ -204,21 +208,19 @@ export abstract class Block<P extends BlockProps = BlockProps> {
   }
 
   private _makePropsProxy(props: P): P {
-    const self = this;
-
     return new Proxy(props, {
-      get(target, prop: string) {
+      get: (target, prop: string): unknown => {
         const value = target[prop as keyof P];
         return typeof value === 'function' ? value.bind(target) : value;
       },
-      set(target, prop: string, value: unknown) {
+      set: (target, prop: string, value: unknown): boolean => {
         const oldTarget = { ...target };
         (target as Record<string, unknown>)[prop] = value;
 
-        self.eventBus().emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
+        this._eventBus.emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
         return true;
       },
-      deleteProperty() {
+      deleteProperty: (): never => {
         throw new Error('Нет доступа');
       },
     });
@@ -240,10 +242,10 @@ export abstract class Block<P extends BlockProps = BlockProps> {
 }
 
 export function render(query: string, block: Block): HTMLElement | null {
-  const root = document.querySelector(query);
+  const root = document.querySelector<HTMLElement>(query);
   if (root && block.getContent()) {
     root.appendChild(block.getContent()!);
     block.dispatchComponentDidMount();
   }
-  return root as HTMLElement | null;
+  return root;
 }

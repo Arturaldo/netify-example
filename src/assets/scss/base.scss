@@ -14,9 +14,6 @@
 
 .no-select {
     -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -66,9 +63,6 @@ body::-webkit-scrollbar-thumb:hover {
     background: var(--color-secondary-600);
 }
 
-@media (prefers-color-scheme: dark) {
-}
-
 /* Component styles */
 .input-wrapper {
   display: flex;
@@ -97,7 +91,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .input--error {
   border-color: var(--color-danger-600) !important;
-  box-shadow: 0px 0px 0px 2px var(--color-danger-200) !important;
+  box-shadow: 0 0 0 2px var(--color-danger-200) !important;
 }
 
 .input__error {
@@ -163,7 +157,7 @@ body::-webkit-scrollbar-thumb:hover {
 .profile__row--input .input:focus {
   outline: none;
   border-color: var(--color-main-3);
-  box-shadow: 0px 0px 0px 2px var(--color-main-6);
+  box-shadow: 0 0 0 2px var(--color-main-6);
 }
 
 .profile__row--input .input::placeholder {
@@ -246,11 +240,8 @@ body::-webkit-scrollbar-thumb:hover {
 
 .avatar__overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;

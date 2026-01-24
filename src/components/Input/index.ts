@@ -1,4 +1,4 @@
-import { Block, BlockProps } from '../../core/Block';
+import { Block, BlockProps, BlockEvent } from '../../core/Block';
 import { validate, ValidationField } from '../../utils/validation';
 
 interface InputProps extends BlockProps {
@@ -20,21 +20,21 @@ export class Input extends Block<InputProps> {
     super('div', {
       ...props,
       events: {
-        focusout: (e: Event) => this._handleBlur(e as FocusEvent),
-        focusin: (e: Event) => this._handleFocus(e as FocusEvent),
-        input: (e: Event) => this._handleInput(e),
+        focusout: (e: BlockEvent) => this._handleBlur(e as FocusEvent),
+        focusin: (e: BlockEvent) => this._handleFocus(e as FocusEvent),
+        input: (e: BlockEvent) => this._handleInput(e),
       },
     });
   }
 
-  private _handleInput(e: Event): void {
-    const target = e.target as HTMLInputElement;
-    if (target.tagName !== 'INPUT') return;
+  private _handleInput(e: BlockEvent): void {
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
   }
 
-  private _handleBlur(e: FocusEvent): void {
-    const target = e.target as HTMLInputElement;
-    if (target.tagName !== 'INPUT') return;
+  private _handleBlur(e: BlockEvent): void {
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
 
     const value = target.value;
 
@@ -45,25 +45,25 @@ export class Input extends Block<InputProps> {
       }
     }
 
-    if (this.props.onBlur) {
+    if (this.props.onBlur && e instanceof FocusEvent) {
       this.props.onBlur(e);
     }
   }
 
-  private _handleFocus(e: FocusEvent): void {
-    const target = e.target as HTMLInputElement;
-    if (target.tagName !== 'INPUT') return;
+  private _handleFocus(e: BlockEvent): void {
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
 
     this._hideError();
 
-    if (this.props.onFocus) {
+    if (this.props.onFocus && e instanceof FocusEvent) {
       this.props.onFocus(e);
     }
   }
 
   private _showError(error: string): void {
-    const errorEl = this.element?.querySelector('.input__error') as HTMLElement;
-    const inputEl = this.element?.querySelector('.input') as HTMLInputElement;
+    const errorEl = this.element?.querySelector<HTMLElement>('.input__error');
+    const inputEl = this.element?.querySelector<HTMLInputElement>('.input');
 
     if (errorEl) {
       errorEl.textContent = error;
@@ -76,8 +76,8 @@ export class Input extends Block<InputProps> {
   }
 
   private _hideError(): void {
-    const errorEl = this.element?.querySelector('.input__error') as HTMLElement;
-    const inputEl = this.element?.querySelector('.input') as HTMLInputElement;
+    const errorEl = this.element?.querySelector<HTMLElement>('.input__error');
+    const inputEl = this.element?.querySelector<HTMLInputElement>('.input');
 
     if (errorEl) {
       errorEl.textContent = '';
@@ -90,12 +90,12 @@ export class Input extends Block<InputProps> {
   }
 
   public getValue(): string {
-    const input = this.element?.querySelector('input') as HTMLInputElement;
+    const input = this.element?.querySelector<HTMLInputElement>('input');
     return input?.value || '';
   }
 
   public setValue(value: string): void {
-    const input = this.element?.querySelector('input') as HTMLInputElement;
+    const input = this.element?.querySelector<HTMLInputElement>('input');
     if (input) {
       input.value = value;
     }

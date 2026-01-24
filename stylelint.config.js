@@ -8,7 +8,7 @@ export default {
 
     // Именование классов в kebab-case (можно отключить если используете BEM)
     'selector-class-pattern': [
-      '^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$',
+      '^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$',
       {
         message: 'Class names should follow BEM convention (block__element--modifier)',
       },

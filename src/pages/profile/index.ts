@@ -30,28 +30,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const fieldsHtml = profileData.fields.map(f => renderProfileField(f.label, f.value)).join('');
 
   app.innerHTML = `
-    <div class="profile">
+    <section class="profile">
       <aside class="profile__sidebar">
         <a href="../chat/index.html" class="profile__back-button">←</a>
       </aside>
 
       <main class="profile__content">
-        <div class="profile__avatar-block">
+        <header class="profile__avatar-block">
           <div class="profile__avatar-container"></div>
           <div class="profile__name">${profileData.displayName}</div>
-        </div>
+        </header>
 
-        <div class="profile__info">
+        <section class="profile__info">
           ${fieldsHtml}
-        </div>
+        </section>
 
-        <div class="profile__actions">
+        <footer class="profile__actions">
           <a href="./edit.html" class="profile__action-link">Изменить данные</a>
           <a href="./password.html" class="profile__action-link">Изменить пароль</a>
           <button class="profile__logout" type="button">Выйти</button>
-        </div>
+        </footer>
       </main>
-    </div>
+    </section>
   `;
 
   render('.profile__avatar-container', avatar);

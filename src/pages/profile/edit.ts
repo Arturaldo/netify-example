@@ -98,19 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!app) return;
 
   app.innerHTML = `
-    <div class="profile">
+    <section class="profile">
       <aside class="profile__sidebar">
         <a href="./index.html" class="profile__back-button">←</a>
       </aside>
 
       <main class="profile__content">
-        <div class="profile__avatar-block">
+        <section class="profile__avatar-block">
           <div class="profile__avatar-container"></div>
-        </div>
+        </section>
 
-        <div class="profile__form-container"></div>
+        <section class="profile__form-container"></section>
       </main>
-    </div>
+    </section>
   `;
 
   render('.profile__avatar-container', avatar);

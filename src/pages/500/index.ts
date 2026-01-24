@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!app) return;
 
   app.innerHTML = `
-    <div class="error-page">
-      <div class="error-page__code">500</div>
-      <div class="error-page__text">Мы уже фиксим</div>
+    <main class="error-page">
+      <h1 class="error-page__code">500</h1>
+      <p class="error-page__text">Мы уже фиксим</p>
       <a href="../chat/index.html" class="error-page__link">Назад к чатам</a>
-    </div>
+    </main>
   `;
 });

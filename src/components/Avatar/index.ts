@@ -35,6 +35,7 @@ export class Avatar extends Block<AvatarProps> {
     if (!this.fileInput) {
       this.fileInput = document.createElement('input');
       this.fileInput.type = 'file';
+      this.fileInput.name = 'avatar';
       this.fileInput.accept = 'image/*';
       this.fileInput.style.display = 'none';
       this.fileInput.addEventListener('change', (e) => this._handleFileChange(e));
@@ -45,17 +46,20 @@ export class Avatar extends Block<AvatarProps> {
   }
 
   private _handleFileChange(e: Event): void {
-    const input = e.target as HTMLInputElement;
+    const input = e.target;
+    if (!(input instanceof HTMLInputElement)) return;
     const file = input.files?.[0];
 
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const newSrc = event.target?.result as string;
-        this._updateAvatar(newSrc);
+      reader.onload = (event): void => {
+        const result = event.target?.result;
+        if (typeof result === 'string') {
+          this._updateAvatar(result);
 
-        if (this.props.onChange) {
-          this.props.onChange(file);
+          if (this.props.onChange) {
+            this.props.onChange(file);
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -66,8 +70,8 @@ export class Avatar extends Block<AvatarProps> {
   }
 
   private _updateAvatar(src: string): void {
-    const imgEl = this.element?.querySelector('.avatar__image') as HTMLImageElement;
-    const placeholderEl = this.element?.querySelector('.avatar__placeholder') as HTMLElement;
+    const imgEl = this.element?.querySelector<HTMLImageElement>('.avatar__image');
+    const placeholderEl = this.element?.querySelector<HTMLElement>('.avatar__placeholder');
 
     if (imgEl) {
       imgEl.src = src;

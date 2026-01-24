@@ -1,4 +1,4 @@
-import { Block, BlockProps } from '../../core/Block';
+import { Block, BlockProps, BlockEvent } from '../../core/Block';
 import { Input } from '../Input';
 import { Button } from '../Button';
 
@@ -14,7 +14,7 @@ export class Form extends Block<FormProps> {
     super('form', {
       ...props,
       events: {
-        submit: (e: Event) => this._handleSubmit(e),
+        submit: (e: BlockEvent) => this._handleSubmit(e),
       },
     });
   }
@@ -25,7 +25,7 @@ export class Form extends Block<FormProps> {
     }
   }
 
-  private _handleSubmit(e: Event): void {
+  private _handleSubmit(e: BlockEvent): void {
     e.preventDefault();
 
     const isValid = this.validateAll();
@@ -42,8 +42,9 @@ export class Form extends Block<FormProps> {
 
   public getFormData(): Record<string, string> {
     const data: Record<string, string> = {};
+    const inputs = (this.children.inputs as unknown as Record<string, Input>) || this.props.inputs;
 
-    Object.values(this.props.inputs).forEach((input) => {
+    Object.values(inputs).forEach((input) => {
       data[input.getName()] = input.getValue();
     });
 
@@ -52,8 +53,9 @@ export class Form extends Block<FormProps> {
 
   public validateAll(): boolean {
     let isValid = true;
+    const inputs = (this.children.inputs as unknown as Record<string, Input>) || this.props.inputs;
 
-    Object.values(this.props.inputs).forEach((input) => {
+    Object.values(inputs).forEach((input) => {
       const inputValid = input.validate();
       if (!inputValid) {
         isValid = false;
@@ -64,7 +66,8 @@ export class Form extends Block<FormProps> {
   }
 
   private _renderChildren(): string {
-    const inputsHtml = Object.entries(this.props.inputs)
+    const inputs = (this.children.inputs as unknown as Record<string, Input>) || this.props.inputs;
+    const inputsHtml = Object.entries(inputs)
       .map(([key]) => `<div data-input="${key}"></div>`)
       .join('');
 
@@ -77,7 +80,10 @@ export class Form extends Block<FormProps> {
   }
 
   protected componentDidMount(): void {
-    Object.entries(this.props.inputs).forEach(([key, input]) => {
+    const inputs = (this.children.inputs as unknown as Record<string, Input>) || this.props.inputs;
+    const button = (this.children.button as unknown as Button) || this.props.button;
+
+    Object.entries(inputs).forEach(([key, input]) => {
       const placeholder = this.element?.querySelector(`[data-input="${key}"]`);
       if (placeholder && input.getContent()) {
         placeholder.replaceWith(input.getContent()!);
@@ -85,8 +91,17 @@ export class Form extends Block<FormProps> {
     });
 
     const buttonPlaceholder = this.element?.querySelector('[data-button]');
-    if (buttonPlaceholder && this.props.button.getContent()) {
-      buttonPlaceholder.replaceWith(this.props.button.getContent()!);
+    if (buttonPlaceholder && button && button.getContent()) {
+      buttonPlaceholder.replaceWith(button.getContent()!);
+    }
+
+    // Добавляем dispatchComponentDidMount для вложенных компонентов
+    Object.values(inputs).forEach((input) => {
+      input.dispatchComponentDidMount();
+    });
+
+    if (button) {
+      button.dispatchComponentDidMount();
     }
   }
 
