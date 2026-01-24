@@ -30,11 +30,11 @@ export abstract class Block<P extends BlockProps = BlockProps> {
 
     this._meta = {
       tagName,
-      props: props as P,
+      props: props as unknown as P,
     };
 
     this.children = children;
-    this.props = this._makePropsProxy(props as P);
+    this.props = this._makePropsProxy(props as unknown as P);
 
     this.eventBus = () => eventBus;
 
@@ -83,7 +83,11 @@ export abstract class Block<P extends BlockProps = BlockProps> {
     this.componentDidMount();
 
     Object.values(this.children).forEach((child) => {
-      child.dispatchComponentDidMount();
+      if (Array.isArray(child)) {
+        child.forEach((c) => c.dispatchComponentDidMount());
+      } else {
+        child.dispatchComponentDidMount();
+      }
     });
   }
 

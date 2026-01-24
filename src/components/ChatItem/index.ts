@@ -1,14 +1,14 @@
 import { Block, BlockProps } from '../../core/Block';
 
 export interface ChatItemProps extends BlockProps {
-  id: number;
+  id: string;
   name: string;
   lastMessage: string;
   time: string;
   avatar?: string | null;
   unreadCount?: number;
   isActive?: boolean;
-  onClick?: (id: number) => void;
+  onClick?: (id: string) => void;
 }
 
 /**

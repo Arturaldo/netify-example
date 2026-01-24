@@ -11,16 +11,12 @@ interface FormProps extends BlockProps {
 
 export class Form extends Block<FormProps> {
   constructor(props: FormProps) {
-    const { button, ...rest } = props;
-
     super('form', {
-      ...rest,
+      ...props,
       events: {
         submit: (e: Event) => this._handleSubmit(e),
       },
     });
-
-    (this.props as FormProps).button = button;
   }
 
   protected init(): void {
