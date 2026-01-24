@@ -4,7 +4,8 @@
   "description": "Messenger project with Vite and Handlebars",
   "type": "module",
   "scripts": {
-    "start": "vite",
+    "start": "vite build && vite preview",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src/**/*.ts",
