@@ -1,17 +1,47 @@
+# Messenger App
+
+Веб-приложение мессенджера.
+
+## Функциональность
+
+- Авторизация и регистрация с валидацией
+- Страница чатов с лентой переписки
+- Профиль пользователя (просмотр, редактирование, смена пароля)
+- Страницы ошибок 404 и 500.
+
+## Технологии
+
+- TypeScript
+- Vite
+- Handlebars
+- SCSS
+- ESLint + Stylelint
+
+## Структура
+
+```
+src/
+├── core/           # Block, EventBus, HTTPTransport
+├── components/     # Переиспользуемые компоненты
+├── pages/          # Страницы приложения
+├── utils/          # Валидация
+└── assets/         # Стили и шрифты
+```
+
 ## Скрипты
 
-- `npm install` установка зависимостей
-- `npm run start` запуск на http://localhost:3000
-- `npm run build` сборка
-- `npm run preview` предпросмотр
+```bash
+npm install          # Установка зависимостей
+npm run start        # Dev-сервер на http://localhost:3000
+npm run build        # Сборка
+npm run validate     # Проверка типов + линтинг
+```
 
 ## Деплой
 
-Базовый URL: https://scintillating-strudel-fa2ed9.netlify.app
+https://scintillating-strudel-fa2ed9.netlify.app
 
-- Вход: https://scintillating-strudel-fa2ed9.netlify.app/src/pages/auth/index.html
-- Регистрация: https://scintillating-strudel-fa2ed9.netlify.app/src/pages/register/index.html
-- Чат: https://scintillating-strudel-fa2ed9.netlify.app/src/pages/chat/index.html
-- Профиль: https://scintillating-strudel-fa2ed9.netlify.app/src/pages/profile/index.html
-- 404: https://scintillating-strudel-fa2ed9.netlify.app/src/pages/404/index.html
-- 500: https://scintillating-strudel-fa2ed9.netlify.app/src/pages/500/index.html
+- [Вход](https://scintillating-strudel-fa2ed9.netlify.app/src/pages/auth/index.html)
+- [Регистрация](https://scintillating-strudel-fa2ed9.netlify.app/src/pages/register/index.html)
+- [Чат](https://scintillating-strudel-fa2ed9.netlify.app/src/pages/chat/index.html)
+- [Профиль](https://scintillating-strudel-fa2ed9.netlify.app/src/pages/profile/index.html)

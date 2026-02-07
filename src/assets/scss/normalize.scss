@@ -5,7 +5,7 @@ body {
     padding: 0;
     min-height: 100vh;
     min-width: 100%;
-    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 * {
@@ -17,7 +17,7 @@ button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
-    -webkit-appearance: button;
+    appearance: button;
 }
 
 [type='number']::-webkit-inner-spin-button,
@@ -27,12 +27,12 @@ button,
 }
 
 [type='search'] {
-    -webkit-appearance: textfield; /* 1 */
+    appearance: textfield; /* 1 */
     outline-offset: -2px; /* 2 */
 }
 
 [type='search']::-webkit-search-decoration {
-    -webkit-appearance: none;
+    appearance: none;
 }
 
 [hidden] {

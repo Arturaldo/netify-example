@@ -12,18 +12,22 @@ body {
     font-size: 18px;
     line-height: 140%;
 }
+
 .display-medium {
     font-size: 16px;
     line-height: 140%;
 }
+
 .display-big {
     font-size: 14px;
     line-height: 140%;
 }
+
 .display-secondary {
     font-size: 12px;
     line-height: 140%;
 }
+
 .display-bold {
     font-weight: 500;
 }
@@ -52,72 +56,67 @@ body {
 .font-secondary {
     color: var(--color-main-8);
 }
+
 .font-gray {
     color: var(--color-main-3);
 }
+
 .font-black {
     color: var(--color-main-12);
 }
+
 .font-white {
     color: var(--color-main-f);
 }
+
 .font-lite-gray {
     color: var(--color-main-8);
 }
+
 .font-danger {
     color: var(--color-main-5);
 }
+
 .pointer {
     cursor: pointer;
 }
+
 .z-index {
     z-index: 2;
 }
+
 .text-margin-botton-x2 {
     margin-bottom: var(--margin-x2);
 }
+
 .font-weight-m {
     font-weight: 500;
 }
+
 .font-weight-b {
     font-weight: 600;
 }
+
 .font-weight-h {
     font-weight: 700;
 }
 
-/** Extra Extra Small (xxsm) **/
-@media (min-width: 380px) {
-}
+/* Media queries for responsive typography will be added here */
 
-/** Extra Small (xsm) **/
-@media (min-width: 420px) {
-}
+/* Extra Extra Small (xxsm): 380px */
 
-/** Small (sm) **/
-@media (min-width: 576px) {
-}
+/* Extra Small (xsm): 420px */
 
-/** Medium (md) **/
-@media (min-width: 768px) {
-}
+/* Small (sm): 576px */
 
-/** Large (lg) **/
-@media (min-width: 992px) {
-}
+/* Medium (md): 768px */
 
-/** Extra large (xl) **/
-@media (min-width: 1200px) {
-}
+/* Large (lg): 992px */
 
-/** Extra extra large (xxl) **/
-@media (min-width: 1400px) {
-}
+/* Extra large (xl): 1200px */
 
-/** Super large (sl) **/
-@media (min-width: 2500px) {
-}
+/* Extra extra large (xxl): 1400px */
 
-/** Super extra large (sel) **/
-@media (min-width: 3400px) {
-}
+/* Super large (sl): 2500px */
+
+/* Super extra large (sel): 3400px */
