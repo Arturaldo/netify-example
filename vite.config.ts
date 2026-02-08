@@ -15,15 +15,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
+        // Только одна точка входа для SPA
         main: resolve(__dirname, 'index.html'),
-        auth: resolve(__dirname, 'src/pages/auth/index.html'),
-        register: resolve(__dirname, 'src/pages/register/index.html'),
-        chat: resolve(__dirname, 'src/pages/chat/index.html'),
-        profile: resolve(__dirname, 'src/pages/profile/index.html'),
-        profileEdit: resolve(__dirname, 'src/pages/profile/edit.html'),
-        profilePassword: resolve(__dirname, 'src/pages/profile/password.html'),
-        error404: resolve(__dirname, 'src/pages/404/index.html'),
-        error500: resolve(__dirname, 'src/pages/500/index.html'),
       },
     },
   },
