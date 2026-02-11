@@ -3,13 +3,13 @@ import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { Form } from '../../components/Form';
 import { Avatar } from '../../components/Avatar';
-import { profileData } from './profileMockData';
+import { AuthAPI } from '../../api/AuthAPI';
+import { UserAPI, PasswordData } from '../../api/UserAPI';
 import '../../assets/scss/collect.scss';
 import './index.scss';
 
-/**
- * Страница смены пароля
- */
+const AVATAR_BASE_URL = 'https://ya-praktikum.tech/api/v2/resources';
+
 export class ProfilePasswordPage extends Block {
   private avatar: Avatar;
   private form: Form;
@@ -18,13 +18,10 @@ export class ProfilePasswordPage extends Block {
     super('section');
 
     this.avatar = new Avatar({
-      src: profileData.avatar,
-      alt: `Аватар ${profileData.display_name}`,
+      src: null,
+      alt: 'Аватар',
       size: 'large',
-      editable: true,
-      onChange: (file) => {
-        console.log('Выбран файл для аватара:', file.name);
-      },
+      editable: false,
     });
 
     const oldPasswordInput = new Input({
@@ -57,9 +54,18 @@ export class ProfilePasswordPage extends Block {
       button: submitButton,
       className: 'profile__info profile__form',
       onSubmit: (data) => {
-        console.log('Данные формы смены пароля:', data);
+        this._handleSubmit(data as unknown as PasswordData);
       },
     });
+  }
+
+  private async _handleSubmit(data: PasswordData) {
+    try {
+      await UserAPI.updatePassword(data);
+      window.dispatchEvent(new CustomEvent('navigate', { detail: '/profile' }));
+    } catch (error) {
+      console.error('Ошибка смены пароля:', error);
+    }
   }
 
   protected init(): void {
@@ -68,28 +74,38 @@ export class ProfilePasswordPage extends Block {
     }
   }
 
-  protected componentDidMount(): void {
-    // Монтируем аватар
+  protected async componentDidMount(): Promise<void> {
     const avatarContainer = this.element?.querySelector('.profile__avatar-container');
     if (avatarContainer && this.avatar.getContent()) {
       avatarContainer.appendChild(this.avatar.getContent()!);
       this.avatar.dispatchComponentDidMount();
     }
 
-    // Монтируем форму
     const formContainer = this.element?.querySelector('.profile__form-container');
     if (formContainer && this.form.getContent()) {
       formContainer.appendChild(this.form.getContent()!);
       this.form.dispatchComponentDidMount();
     }
 
-    // Добавляем обработчик для кнопки "Назад"
     const backButton = this.element?.querySelector('.profile__back-button');
     if (backButton) {
       backButton.addEventListener('click', (e) => {
         e.preventDefault();
         window.dispatchEvent(new CustomEvent('navigate', { detail: '/profile' }));
       });
+    }
+
+    try {
+      const user = await AuthAPI.getUser();
+      const nameEl = this.element?.querySelector('.profile__name');
+      if (nameEl) {
+        nameEl.textContent = user.display_name || user.first_name;
+      }
+      if (user.avatar) {
+        this.avatar.setProps({ src: `${AVATAR_BASE_URL}${user.avatar}` });
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки профиля:', error);
     }
   }
 
@@ -102,7 +118,7 @@ export class ProfilePasswordPage extends Block {
       <main class="profile__content">
         <header class="profile__avatar-block">
           <div class="profile__avatar-container"></div>
-          <div class="profile__name">${profileData.display_name}</div>
+          <div class="profile__name">Загрузка...</div>
         </header>
 
         <section class="profile__form-container"></section>

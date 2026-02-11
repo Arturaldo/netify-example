@@ -1,27 +1,42 @@
 import { Block } from '../../core/Block';
 import { Avatar } from '../../components/Avatar';
-import { profileData } from './profileMockData';
+import { AuthAPI, UserData } from '../../api/AuthAPI';
+import { UserAPI } from '../../api/UserAPI';
 import '../../assets/scss/collect.scss';
 import './index.scss';
 
-/**
- * Страница профиля пользователя - отображает информацию о пользователе
- */
+const AVATAR_BASE_URL = 'https://ya-praktikum.tech/api/v2/resources';
+
 export class ProfilePage extends Block {
   private avatar: Avatar;
+  private userData: UserData | null = null;
 
   constructor() {
     super('section');
 
     this.avatar = new Avatar({
-      src: profileData.avatar,
-      alt: `Аватар пользователя ${profileData.displayName}`,
+      src: null,
+      alt: 'Аватар пользователя',
       size: 'large',
       editable: true,
-      onChange: (file) => {
-        console.log('Выбран файл для аватара:', file.name);
+      onChange: (file: File) => {
+        this._handleAvatarChange(file);
       },
     });
+  }
+
+  private async _handleAvatarChange(file: File) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    try {
+      const user = await UserAPI.updateAvatar(formData);
+      this.userData = user;
+      if (user.avatar) {
+        this.avatar.setProps({ src: `${AVATAR_BASE_URL}${user.avatar}` });
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки аватара:', error);
+    }
   }
 
   protected init(): void {
@@ -39,15 +54,36 @@ export class ProfilePage extends Block {
     `;
   }
 
-  protected componentDidMount(): void {
-    // Монтируем аватар
+  private _updateContent(user: UserData): void {
+    const nameEl = this.element?.querySelector('.profile__name');
+    if (nameEl) {
+      nameEl.textContent = user.display_name || user.first_name;
+    }
+
+    const infoEl = this.element?.querySelector('.profile__info');
+    if (infoEl) {
+      infoEl.innerHTML = [
+        this.renderProfileField('Почта', user.email),
+        this.renderProfileField('Логин', user.login),
+        this.renderProfileField('Имя', user.first_name),
+        this.renderProfileField('Фамилия', user.second_name),
+        this.renderProfileField('Имя в чате', user.display_name || ''),
+        this.renderProfileField('Телефон', user.phone),
+      ].join('');
+    }
+
+    if (user.avatar) {
+      this.avatar.setProps({ src: `${AVATAR_BASE_URL}${user.avatar}` });
+    }
+  }
+
+  protected async componentDidMount(): Promise<void> {
     const avatarContainer = this.element?.querySelector('.profile__avatar-container');
     if (avatarContainer && this.avatar.getContent()) {
       avatarContainer.appendChild(this.avatar.getContent()!);
       this.avatar.dispatchComponentDidMount();
     }
 
-    // Добавляем обработчик для кнопки "Назад"
     const backButton = this.element?.querySelector('.profile__back-button');
     if (backButton) {
       backButton.addEventListener('click', (e) => {
@@ -56,7 +92,6 @@ export class ProfilePage extends Block {
       });
     }
 
-    // Добавляем обработчики для ссылок
     const editLink = this.element?.querySelector('[data-edit-link]');
     if (editLink) {
       editLink.addEventListener('click', (e) => {
@@ -73,19 +108,27 @@ export class ProfilePage extends Block {
       });
     }
 
-    // Добавляем обработчик для кнопки "Выйти"
     const logoutButton = this.element?.querySelector('.profile__logout');
     if (logoutButton) {
-      logoutButton.addEventListener('click', () => {
-        console.log('Выход из системы');
+      logoutButton.addEventListener('click', async () => {
+        try {
+          await AuthAPI.logout();
+        } catch {
+          // ignore
+        }
         window.dispatchEvent(new CustomEvent('navigate', { detail: '/auth' }));
       });
+    }
+
+    try {
+      this.userData = await AuthAPI.getUser();
+      this._updateContent(this.userData);
+    } catch (error) {
+      console.error('Ошибка загрузки профиля:', error);
     }
   }
 
   render(): string {
-    const fieldsHtml = profileData.fields.map((f) => this.renderProfileField(f.label, f.value)).join('');
-
     return `
       <aside class="profile__sidebar">
         <a href="/chat" class="profile__back-button">←</a>
@@ -94,11 +137,10 @@ export class ProfilePage extends Block {
       <main class="profile__content">
         <header class="profile__avatar-block">
           <div class="profile__avatar-container"></div>
-          <div class="profile__name">${profileData.displayName}</div>
+          <div class="profile__name">Загрузка...</div>
         </header>
 
         <section class="profile__info">
-          ${fieldsHtml}
         </section>
 
         <footer class="profile__actions">

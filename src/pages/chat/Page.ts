@@ -2,13 +2,13 @@ import { Block, BlockProps } from '../../core/Block';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { validate } from '../../utils/validation';
-import { chatsData, chatPageData, Chat, Message } from './chatDataMock';
+import { ChatAPI, ChatData } from '../../api/ChatAPI';
+import { AuthAPI, UserData } from '../../api/AuthAPI';
+import { UserAPI } from '../../api/UserAPI';
+import { WebSocketTransport, WSMessage } from '../../core/WebSocketTransport';
 import '../../assets/scss/collect.scss';
 import './index.scss';
 
-/**
- * Форма отправки сообщения в чате
- */
 interface MessageFormProps extends BlockProps {
   onSubmit?: (message: string) => void;
 }
@@ -54,7 +54,6 @@ class MessageForm extends Block<MessageFormProps> {
     const result = validate('message', value);
 
     if (result.isValid) {
-      console.log('Отправка сообщения:', { message: value });
       if (this.props.onSubmit) {
         this.props.onSubmit(value);
       }
@@ -84,18 +83,20 @@ class MessageForm extends Block<MessageFormProps> {
   }
 }
 
-/**
- * Страница чата - основной интерфейс общения
- */
 export class ChatPage extends Block {
   private messageForm: MessageForm;
+  private chats: ChatData[] = [];
+  private activeChatId: number | null = null;
+  private ws: WebSocketTransport | null = null;
+  private currentUser: UserData | null = null;
+  private messages: WSMessage[] = [];
 
   constructor() {
     super('main');
 
     this.messageForm = new MessageForm({
       onSubmit: (message) => {
-        console.log('Сообщение отправлено:', message);
+        this._sendMessage(message);
       },
     });
   }
@@ -106,71 +107,200 @@ export class ChatPage extends Block {
     }
   }
 
-  private renderChatItem(chat: Chat): string {
-    const activeClass = chat.isActive ? 'left-bar__content__mini-chat--active' : '';
-    const unreadClass = chat.unreadCount ? 'left-bar__content__mini-chat__name--unread' : '';
+  private _sendMessage(content: string): void {
+    if (this.ws) {
+      this.ws.send(content);
+    }
+  }
+
+  private _formatTime(isoString: string): string {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  private renderChatItem(chat: ChatData): string {
+    const activeClass = chat.id === this.activeChatId ? 'left-bar__content__mini-chat--active' : '';
+    const unreadClass = chat.unread_count ? 'left-bar__content__mini-chat__name--unread' : '';
+    const lastMsg = chat.last_message?.content || '';
+    const time = chat.last_message ? this._formatTime(chat.last_message.time) : '';
 
     return `
-      <a href="#" class="left-bar__content__mini-chat ${activeClass}">
+      <a href="#" class="left-bar__content__mini-chat ${activeClass}" data-chat-id="${chat.id}">
         <div class="left-bar__content__mini-chat__avatar">
-          ${
-            chat.avatar
-              ? `<img src="${chat.avatar}" alt="Аватар пользователя ${chat.name}">`
-              : `<span class="avatar-placeholder" aria-label="Аватар по умолчанию для ${chat.name}"></span>`
-          }
+          <span class="avatar-placeholder"></span>
         </div>
         <div class="left-bar__content__mini-chat__body">
           <div class="left-bar__content__mini-chat__name ${unreadClass}">
-            ${chat.name}
+            ${chat.title}
           </div>
           <div class="left-bar__content__mini-chat__last">
-            ${chat.lastMessage}
+            ${lastMsg}
           </div>
         </div>
         <div class="left-bar__content__mini-chat__right">
-          <div class="left-bar__content__mini-chat__time">${chat.time}</div>
-          ${chat.unreadCount ? `<div class="left-bar__content__mini-chat__badge">${chat.unreadCount}</div>` : ''}
+          <div class="left-bar__content__mini-chat__time">${time}</div>
+          ${chat.unread_count ? `<div class="left-bar__content__mini-chat__badge">${chat.unread_count}</div>` : ''}
         </div>
       </a>
     `;
   }
 
-  private renderMessage(message: Message): string {
-    const directionClass = message.isOutgoing ? 'message--outgoing' : 'message--incoming';
-    const mediaClass = message.image ? 'message__bubble--media' : '';
-
-    let content = '';
-    if (message.text) {
-      content += message.text;
-    }
-    if (message.image) {
-      content += `<img src="${message.image}" alt="${message.imageAlt || ''}" class="message__image">`;
-    }
-
-    let meta = '';
-    if (message.isOutgoing) {
-      meta = `
-        <div class="message__meta">
-          ${message.status ? `<span class="message__status">${message.status}</span>` : ''}
-          <span class="message__time">${message.time}</span>
-        </div>
-      `;
-    } else {
-      meta = `<div class="message__time">${message.time}</div>`;
-    }
+  private renderMessage(msg: WSMessage): string {
+    if (!this.currentUser) return '';
+    const isOutgoing = msg.user_id === this.currentUser.id;
+    const directionClass = isOutgoing ? 'message--outgoing' : 'message--incoming';
+    const time = msg.time ? this._formatTime(msg.time) : '';
 
     return `
       <div class="message ${directionClass}">
-        <div class="message__bubble ${mediaClass}">
-          ${content}
+        <div class="message__bubble">
+          ${msg.content}
         </div>
-        ${meta}
+        <div class="message__time">${time}</div>
       </div>
     `;
   }
 
-  protected componentDidMount(): void {
-    // Добавляем обработчик клика на ссылку профиля
+  private _updateChatList(): void {
+    const listEl = this.element?.querySelector('.left-bar__content');
+    if (listEl) {
+      listEl.innerHTML = this.chats.map((c) => this.renderChatItem(c)).join('');
+      this._bindChatClicks();
+    }
+  }
+
+  private _updateMessages(): void {
+    const messagesEl = this.element?.querySelector('.chat__container__chat-content__mini-chat');
+    if (messagesEl) {
+      messagesEl.innerHTML = this.messages.map((m) => this.renderMessage(m)).join('');
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+  }
+
+  private _updateChatHeader(): void {
+    const chat = this.chats.find((c) => c.id === this.activeChatId);
+    const nameEl = this.element?.querySelector('.chat__chat-name');
+    if (nameEl) {
+      nameEl.textContent = chat ? chat.title : '';
+    }
+  }
+
+  private _bindChatClicks(): void {
+    const chatItems = this.element?.querySelectorAll('[data-chat-id]');
+    chatItems?.forEach((item) => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const chatId = Number((item as HTMLElement).dataset.chatId);
+        if (chatId && chatId !== this.activeChatId) {
+          this._selectChat(chatId);
+        }
+      });
+    });
+  }
+
+  private async _selectChat(chatId: number): Promise<void> {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+
+    this.activeChatId = chatId;
+    this.messages = [];
+    this._updateChatList();
+    this._updateChatHeader();
+    this._updateMessages();
+
+    const chatContent = this.element?.querySelector('.chat__container__chat-content') as HTMLElement;
+    if (chatContent) {
+      chatContent.style.display = '';
+    }
+    const placeholder = this.element?.querySelector('.chat__placeholder') as HTMLElement;
+    if (placeholder) {
+      placeholder.style.display = 'none';
+    }
+
+    if (!this.currentUser) return;
+
+    try {
+      const { token } = await ChatAPI.getChatToken(chatId);
+      this.ws = new WebSocketTransport(this.currentUser.id, chatId, token);
+
+      this.ws.onMessage = (data) => {
+        if (Array.isArray(data)) {
+          this.messages = data.reverse();
+          this._updateMessages();
+        } else if (data.type === 'message') {
+          this.messages.push(data);
+          this._updateMessages();
+        }
+      };
+
+      await this.ws.connect();
+      this.ws.getOldMessages(0);
+    } catch (error) {
+      console.error('Ошибка подключения к чату:', error);
+    }
+  }
+
+  private _bindCreateChat(): void {
+    const createBtn = this.element?.querySelector('[data-create-chat]');
+    createBtn?.addEventListener('click', async () => {
+      const title = prompt('Название нового чата:');
+      if (title) {
+        try {
+          await ChatAPI.createChat(title);
+          this.chats = await ChatAPI.getChats();
+          this._updateChatList();
+        } catch (error) {
+          console.error('Ошибка создания чата:', error);
+        }
+      }
+    });
+  }
+
+  private _bindAddUser(): void {
+    const addBtn = this.element?.querySelector('[data-add-user]');
+    addBtn?.addEventListener('click', async () => {
+      if (!this.activeChatId) return;
+      const login = prompt('Логин пользователя для добавления:');
+      if (login) {
+        try {
+          const users = await UserAPI.searchUsers(login);
+          if (users.length > 0) {
+            await ChatAPI.addUsers(this.activeChatId, [users[0].id]);
+            alert(`Пользователь ${users[0].login} добавлен в чат`);
+          } else {
+            alert('Пользователь не найден');
+          }
+        } catch (error) {
+          console.error('Ошибка добавления пользователя:', error);
+        }
+      }
+    });
+  }
+
+  private _bindRemoveUser(): void {
+    const removeBtn = this.element?.querySelector('[data-remove-user]');
+    removeBtn?.addEventListener('click', async () => {
+      if (!this.activeChatId) return;
+      const login = prompt('Логин пользователя для удаления:');
+      if (login) {
+        try {
+          const users = await UserAPI.searchUsers(login);
+          if (users.length > 0) {
+            await ChatAPI.removeUsers(this.activeChatId, [users[0].id]);
+            alert(`Пользователь ${users[0].login} удалён из чата`);
+          } else {
+            alert('Пользователь не найден');
+          }
+        } catch (error) {
+          console.error('Ошибка удаления пользователя:', error);
+        }
+      }
+    });
+  }
+
+  protected async componentDidMount(): Promise<void> {
     const profileLink = this.element?.querySelector('.top-bar__profile');
     if (profileLink) {
       profileLink.addEventListener('click', (e) => {
@@ -179,18 +309,26 @@ export class ChatPage extends Block {
       });
     }
 
-    // Монтируем форму сообщения
     const messageFormContainer = this.element?.querySelector('.chat__message-form-container');
     if (messageFormContainer && this.messageForm.getContent()) {
       messageFormContainer.appendChild(this.messageForm.getContent()!);
       this.messageForm.dispatchComponentDidMount();
     }
+
+    this._bindCreateChat();
+    this._bindAddUser();
+    this._bindRemoveUser();
+
+    try {
+      this.currentUser = await AuthAPI.getUser();
+      this.chats = await ChatAPI.getChats();
+      this._updateChatList();
+    } catch (error) {
+      console.error('Ошибка загрузки данных:', error);
+    }
   }
 
   render(): string {
-    const chatListHtml = chatsData.map((chat) => this.renderChatItem(chat)).join('');
-    const messagesHtml = chatPageData.messages.map((message) => this.renderMessage(message)).join('');
-
     return `
       <aside class="chat__container__left-bar">
         <header class="chat__container__left-bar__top-bar">
@@ -203,26 +341,30 @@ export class ChatPage extends Block {
           <div class="top-bar__search">
             <input class="top-bar__search__input" type="text" placeholder="Поиск">
           </div>
+          <button class="top-bar__create-chat" data-create-chat type="button">+ Новый чат</button>
         </header>
 
-        <section class="chat__container__left-bar__content scrollable">
-          ${chatListHtml}
+        <section class="chat__container__left-bar__content left-bar__content scrollable">
         </section>
       </aside>
 
-      <section class="chat__container__chat-content">
+      <div class="chat__placeholder">
+        <p>Выберите чат, чтобы отправить сообщение</p>
+      </div>
+
+      <section class="chat__container__chat-content" style="display:none;">
         <header class="chat__container__chat-content__header">
           <div class="chat__chat-header-left">
             <div class="chat__chat-avatar"></div>
-            <div class="chat__chat-name">${chatPageData.currentChat.name}</div>
+            <div class="chat__chat-name"></div>
           </div>
-          <button class="chat__chat-menu" type="button">⋮</button>
+          <div class="chat__chat-actions">
+            <button class="chat__chat-action-btn" data-add-user type="button" title="Добавить пользователя">+👤</button>
+            <button class="chat__chat-action-btn" data-remove-user type="button" title="Удалить пользователя">-👤</button>
+          </div>
         </header>
 
-        <div class="chat__chat-date">${chatPageData.currentChat.date}</div>
-
         <article class="chat__container__chat-content__mini-chat">
-          ${messagesHtml}
         </article>
 
         <footer class="chat__message-form-container"></footer>

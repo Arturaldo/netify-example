@@ -1,0 +1,52 @@
+import { HTTPTransport } from '../core/HTTPTransport';
+
+export interface ChatData {
+  id: number;
+  title: string;
+  avatar: string | null;
+  unread_count: number;
+  last_message: {
+    user: {
+      first_name: string;
+      second_name: string;
+      avatar: string | null;
+      email: string;
+      login: string;
+      phone: string;
+    };
+    time: string;
+    content: string;
+  } | null;
+}
+
+const BASE_URL = 'https://ya-praktikum.tech/api/v2';
+
+class ChatAPIClass {
+  private http = new HTTPTransport(BASE_URL);
+
+  getChats() {
+    return this.http.get<ChatData[]>('/chats');
+  }
+
+  createChat(title: string) {
+    return this.http.post<{ id: number }>('/chats', { data: { title } });
+  }
+
+  deleteChat(chatId: number) {
+    return this.http.delete('/chats', { data: { chatId } });
+  }
+
+  addUsers(chatId: number, users: number[]) {
+    return this.http.put('/chats/users', { data: { users, chatId } });
+  }
+
+  removeUsers(chatId: number, users: number[]) {
+    return this.http.delete('/chats/users', { data: { users, chatId } });
+  }
+
+  getChatToken(chatId: number) {
+    return this.http.post<{ token: string }>(`/chats/token/${chatId}`);
+  }
+}
+
+export const ChatAPI = new ChatAPIClass();

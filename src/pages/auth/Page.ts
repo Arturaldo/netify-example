@@ -3,12 +3,10 @@ import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { Form } from '../../components/Form';
 import { Link } from '../../components/Link';
+import { AuthAPI } from '../../api/AuthAPI';
 import '../../assets/scss/collect.scss';
 import './index.scss';
 
-/**
- * Страница авторизации (вход в систему)
- */
 export class AuthPage extends Block {
   private form: Form;
   private registerLink: Link;
@@ -16,7 +14,6 @@ export class AuthPage extends Block {
   constructor() {
     super('main');
 
-    // Создаем инпуты
     const loginInput = new Input({
       name: 'login',
       type: 'text',
@@ -39,7 +36,6 @@ export class AuthPage extends Block {
       className: 'auth__container__submit',
     });
 
-    // Создаем форму
     this.form = new Form({
       inputs: {
         login: loginInput,
@@ -48,11 +44,10 @@ export class AuthPage extends Block {
       button: submitButton,
       className: 'auth__container__form',
       onSubmit: (data) => {
-        console.log('Данные формы авторизации:', data);
+        this._handleSignin(data as { login: string; password: string });
       },
     });
 
-    // Создаем ссылку на регистрацию
     this.registerLink = new Link({
       text: 'Нет аккаунта?',
       href: '/register',
@@ -65,6 +60,24 @@ export class AuthPage extends Block {
     });
   }
 
+  private async _handleSignin(data: { login: string; password: string }) {
+    try {
+      await AuthAPI.signin(data);
+      window.dispatchEvent(new CustomEvent('navigate', { detail: '/chat' }));
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Ошибка авторизации';
+      this._showError(msg);
+    }
+  }
+
+  private _showError(message: string) {
+    const errorEl = this.element?.querySelector('.auth__error');
+    if (errorEl) {
+      errorEl.textContent = message;
+      (errorEl as HTMLElement).style.display = 'block';
+    }
+  }
+
   protected init(): void {
     if (this.element) {
       this.element.className = 'auth__container';
@@ -72,7 +85,6 @@ export class AuthPage extends Block {
   }
 
   protected componentDidMount(): void {
-    // Монтируем форму
     const formPlaceholder = this.element?.querySelector('[data-form]');
     if (formPlaceholder) {
       const formContent = this.form.getContent();
@@ -82,7 +94,6 @@ export class AuthPage extends Block {
       }
     }
 
-    // Монтируем ссылку
     const linkPlaceholder = this.element?.querySelector('[data-register-link]');
     if (linkPlaceholder) {
       const linkContent = this.registerLink.getContent();
@@ -96,6 +107,7 @@ export class AuthPage extends Block {
   render(): string {
     return `
       <h1>Вход</h1>
+      <div class="auth__error" style="display:none; color:red; margin-bottom:10px;"></div>
       <div data-form></div>
       <div data-register-link></div>
     `;

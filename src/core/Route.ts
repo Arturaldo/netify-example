@@ -51,11 +51,9 @@ export class Route {
    * Используется роутером при переходе на этот маршрут.
    */
   render(): void {
-    // Создаем экземпляр Block только если его еще нет
-    // Это позволяет переиспользовать экземпляры при повторных переходах
-    if (!this._block) {
-      this._block = new this._blockClass();
-    }
+    // Создаем новый экземпляр Block при каждом переходе,
+    // чтобы данные загружались заново из API
+    this._block = new this._blockClass();
 
     // Находим корневой элемент в DOM
     const root = document.querySelector(this._props.rootQuery);
