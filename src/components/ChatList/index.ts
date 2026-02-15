@@ -16,13 +16,8 @@ interface ChatListProps extends BlockProps {
   onChatSelect?: (chatId: string) => void;
 }
 
-/**
- * Компонент списка чатов.
- * Демонстрирует работу с массивом дочерних компонентов.
- */
 export class ChatList extends Block<ChatListProps> {
   constructor(props: ChatListProps) {
-    // Создаём массив дочерних компонентов ChatItem
     const chatItems = props.chats.map(
       (chat) =>
         new ChatItem({
@@ -37,7 +32,6 @@ export class ChatList extends Block<ChatListProps> {
 
     super('div', {
       ...props,
-      // Массив компонентов также можно передать как children
       items: chatItems,
     });
   }
@@ -48,18 +42,10 @@ export class ChatList extends Block<ChatListProps> {
     }
   }
 
-  /**
-   * Массив компонентов {{{ items }}} автоматически развернётся
-   * в последовательность DOM-элементов.
-   */
   render(): DocumentFragment {
     return this.compile(`{{{ items }}}`);
   }
 
-  /**
-   * Метод для обновления списка чатов.
-   * Создаёт новые дочерние компоненты и вызывает перерендер.
-   */
   public updateChats(chats: ChatData[]): void {
     const chatItems = chats.map(
       (chat) =>
@@ -73,7 +59,6 @@ export class ChatList extends Block<ChatListProps> {
         })
     );
 
-    // Обновляем children и props
     this.children.items = chatItems;
     this.setProps({ chats });
   }

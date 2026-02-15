@@ -86,10 +86,12 @@ class MessageForm extends Block<MessageFormProps> {
 export class ChatPage extends Block {
   private messageForm: MessageForm;
   private chats: ChatData[] = [];
+  private filteredChats: ChatData[] = [];
   private activeChatId: number | null = null;
   private ws: WebSocketTransport | null = null;
   private currentUser: UserData | null = null;
   private messages: WSMessage[] = [];
+  private searchQuery: string = '';
 
   constructor() {
     super('main');
@@ -164,8 +166,13 @@ export class ChatPage extends Block {
   private _updateChatList(): void {
     const listEl = this.element?.querySelector('.left-bar__content');
     if (listEl) {
-      listEl.innerHTML = this.chats.map((c) => this.renderChatItem(c)).join('');
-      this._bindChatClicks();
+      const chatsToDisplay = this.searchQuery ? this.filteredChats : this.chats;
+      if (chatsToDisplay.length === 0 && this.searchQuery) {
+        listEl.innerHTML = '<div class="no-results">Чаты не найдены</div>';
+      } else {
+        listEl.innerHTML = chatsToDisplay.map((c) => this.renderChatItem(c)).join('');
+        this._bindChatClicks();
+      }
     }
   }
 
@@ -300,6 +307,61 @@ export class ChatPage extends Block {
     });
   }
 
+  private _bindDeleteChat(): void {
+    const deleteBtn = this.element?.querySelector('[data-delete-chat]');
+    deleteBtn?.addEventListener('click', async () => {
+      if (!this.activeChatId) {
+        alert('Выберите чат для удаления');
+        return;
+      }
+      if (confirm('Вы уверены, что хотите удалить этот чат?')) {
+        try {
+          await ChatAPI.deleteChat(this.activeChatId);
+          if (this.ws) {
+            this.ws.close();
+            this.ws = null;
+          }
+          this.activeChatId = null;
+          this.messages = [];
+          this.chats = await ChatAPI.getChats();
+          this.filteredChats = this.chats;
+          this._updateChatList();
+
+          const chatContent = this.element?.querySelector('.chat__container__chat-content') as HTMLElement;
+          if (chatContent) {
+            chatContent.style.display = 'none';
+          }
+          const placeholder = this.element?.querySelector('.chat__placeholder') as HTMLElement;
+          if (placeholder) {
+            placeholder.style.display = '';
+          }
+          alert('Чат успешно удалён');
+        } catch (error) {
+          console.error('Ошибка удаления чата:', error);
+          alert('Ошибка при удалении чата');
+        }
+      }
+    });
+  }
+
+  private _bindSearchInput(): void {
+    const searchInput = this.element?.querySelector('.top-bar__search__input') as HTMLInputElement;
+    searchInput?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      this.searchQuery = target.value.toLowerCase().trim();
+
+      if (this.searchQuery) {
+        this.filteredChats = this.chats.filter((chat) =>
+          chat.title.toLowerCase().includes(this.searchQuery)
+        );
+      } else {
+        this.filteredChats = this.chats;
+      }
+
+      this._updateChatList();
+    });
+  }
+
   protected async componentDidMount(): Promise<void> {
     const profileLink = this.element?.querySelector('.top-bar__profile');
     if (profileLink) {
@@ -318,10 +380,13 @@ export class ChatPage extends Block {
     this._bindCreateChat();
     this._bindAddUser();
     this._bindRemoveUser();
+    this._bindDeleteChat();
+    this._bindSearchInput();
 
     try {
       this.currentUser = await AuthAPI.getUser();
       this.chats = await ChatAPI.getChats();
+      this.filteredChats = this.chats;
       this._updateChatList();
     } catch (error) {
       console.error('Ошибка загрузки данных:', error);
@@ -361,6 +426,7 @@ export class ChatPage extends Block {
           <div class="chat__chat-actions">
             <button class="chat__chat-action-btn" data-add-user type="button" title="Добавить пользователя">+👤</button>
             <button class="chat__chat-action-btn" data-remove-user type="button" title="Удалить пользователя">-👤</button>
+            <button class="chat__chat-action-btn" data-delete-chat type="button" title="Удалить чат">🗑️</button>
           </div>
         </header>
 

@@ -3,16 +3,12 @@ import { Link } from '../../components/Link';
 import '../../assets/scss/collect.scss';
 import './index.scss';
 
-/**
- * Страница 500 - отображается при внутренних ошибках сервера
- */
 export class ServerErrorPage extends Block {
   private linkToChat: Link;
 
   constructor() {
     super('main');
 
-    // Создаем ссылку на страницу чата
     this.linkToChat = new Link({
       text: 'Назад к чатам',
       href: '/chat',
@@ -20,7 +16,6 @@ export class ServerErrorPage extends Block {
       events: {
         click: (e: Event) => {
           e.preventDefault();
-          // Используем роутер для навигации
           window.dispatchEvent(new CustomEvent('navigate', { detail: '/chat' }));
         },
       },
@@ -34,7 +29,6 @@ export class ServerErrorPage extends Block {
   }
 
   protected componentDidMount(): void {
-    // Вставляем ссылку в DOM после монтирования
     const linkPlaceholder = this.element?.querySelector('[data-link]');
     if (linkPlaceholder && this.linkToChat.getContent()) {
       linkPlaceholder.replaceWith(this.linkToChat.getContent()!);

@@ -32,7 +32,6 @@ export class Form extends Block<FormProps> {
 
     if (isValid) {
       const data = this.getFormData();
-      console.log('Form data:', data);
 
       if (this.props.onSubmit) {
         this.props.onSubmit(data);
@@ -95,7 +94,6 @@ export class Form extends Block<FormProps> {
       buttonPlaceholder.replaceWith(button.getContent()!);
     }
 
-    // Добавляем dispatchComponentDidMount для вложенных компонентов
     Object.values(inputs).forEach((input) => {
       input.dispatchComponentDidMount();
     });

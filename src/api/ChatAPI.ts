@@ -19,6 +19,18 @@ export interface ChatData {
   } | null;
 }
 
+export interface ChatUser {
+  id: number;
+  first_name: string;
+  second_name: string;
+  display_name: string | null;
+  login: string;
+  email: string;
+  phone: string;
+  avatar: string | null;
+  role: string;
+}
+
 const BASE_URL = 'https://ya-praktikum.tech/api/v2';
 
 class ChatAPIClass {
@@ -33,7 +45,7 @@ class ChatAPIClass {
   }
 
   deleteChat(chatId: number) {
-    return this.http.delete('/chats', { data: { chatId } });
+    return this.http.delete('/chats', { data: { chatId: chatId } });
   }
 
   addUsers(chatId: number, users: number[]) {
@@ -46,6 +58,18 @@ class ChatAPIClass {
 
   getChatToken(chatId: number) {
     return this.http.post<{ token: string }>(`/chats/token/${chatId}`);
+  }
+
+  getChatUsers(chatId: number) {
+    return this.http.get<ChatUser[]>(`/chats/${chatId}/users`);
+  }
+
+  getNewMessagesCount(chatId: number) {
+    return this.http.get<{ unread_count: number }>(`/chats/new/${chatId}`);
+  }
+
+  updateChatAvatar(formData: FormData) {
+    return this.http.put<ChatData>('/chats/avatar', { data: formData });
   }
 }
 

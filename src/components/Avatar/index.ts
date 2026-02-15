@@ -65,7 +65,6 @@ export class Avatar extends Block<AvatarProps> {
       reader.readAsDataURL(file);
     }
 
-    // Reset input для возможности выбрать тот же файл
     input.value = '';
   }
 
@@ -77,7 +76,6 @@ export class Avatar extends Block<AvatarProps> {
       imgEl.src = src;
       imgEl.style.display = 'block';
     } else if (this.element) {
-      // Создаём img если его не было
       const img = document.createElement('img');
       img.className = 'avatar__image';
       img.src = src;
@@ -94,8 +92,6 @@ export class Avatar extends Block<AvatarProps> {
     }
 
     (this.props as { src?: string }).src = src;
-
-    console.log('Аватар изменён');
   }
 
   public getSrc(): string | null {

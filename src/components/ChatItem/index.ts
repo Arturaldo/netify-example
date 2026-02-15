@@ -11,10 +11,6 @@ export interface ChatItemProps extends BlockProps {
   onClick?: (id: string) => void;
 }
 
-/**
- * Компонент элемента чата в списке.
- * Демонстрирует использование Handlebars для условного рендеринга.
- */
 export class ChatItem extends Block<ChatItemProps> {
   constructor(props: ChatItemProps) {
     super('a', {
@@ -41,12 +37,6 @@ export class ChatItem extends Block<ChatItemProps> {
     }
   }
 
-  /**
-   * Handlebars шаблон с условными блоками.
-   * {{#if avatar}} — условный рендеринг
-   * {{ name }} — экранированный вывод (безопасно от XSS)
-   * {{{ avatarHtml }}} — неэкранированный HTML (используем для заранее подготовленного HTML)
-   */
   render(): DocumentFragment {
     const { name, lastMessage, time, avatar, unreadCount } = this.props;
 

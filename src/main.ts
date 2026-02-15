@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     await AuthAPI.getUser();
 
-    // User is authorized — redirect away from public routes
     if (PUBLIC_ROUTES.includes(currentPath) || currentPath === '/') {
       router.start();
       router.go('/chat');
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       router.start();
     }
   } catch {
-    // User is not authorized — redirect to auth
     router.start();
     if (!PUBLIC_ROUTES.includes(currentPath)) {
       router.go('/auth');

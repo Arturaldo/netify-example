@@ -114,7 +114,7 @@ export class ProfilePage extends Block {
         try {
           await AuthAPI.logout();
         } catch {
-          // ignore
+          console.log('Logout error');
         }
         window.dispatchEvent(new CustomEvent('navigate', { detail: '/auth' }));
       });

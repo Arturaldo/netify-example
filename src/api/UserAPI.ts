@@ -35,6 +35,10 @@ class UserAPIClass {
   searchUsers(login: string) {
     return this.http.post<UserData[]>('/user/search', { data: { login } });
   }
+
+  getUserById(id: number) {
+    return this.http.get<UserData>(`/user/${id}`);
+  }
 }
 
 export const UserAPI = new UserAPIClass();
