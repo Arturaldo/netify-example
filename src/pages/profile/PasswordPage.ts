@@ -5,10 +5,9 @@ import { Form } from '../../components/Form';
 import { Avatar } from '../../components/Avatar';
 import { AuthAPI } from '../../api/AuthAPI';
 import { UserAPI, PasswordData } from '../../api/UserAPI';
+import { RESOURCES_URL } from '../../api/constants';
 import '../../assets/scss/collect.scss';
 import './index.scss';
-
-const AVATAR_BASE_URL = 'https://ya-praktikum.tech/api/v2/resources';
 
 export class ProfilePasswordPage extends Block {
   private avatar: Avatar;
@@ -102,7 +101,7 @@ export class ProfilePasswordPage extends Block {
         nameEl.textContent = user.display_name || user.first_name;
       }
       if (user.avatar) {
-        this.avatar.setProps({ src: `${AVATAR_BASE_URL}${user.avatar}` });
+        this.avatar.setProps({ src: `${RESOURCES_URL}${user.avatar}` });
       }
     } catch (error) {
       console.error('Ошибка загрузки профиля:', error);

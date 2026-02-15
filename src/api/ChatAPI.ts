@@ -1,4 +1,5 @@
 import { HTTPTransport } from '../core/HTTPTransport';
+import { BASE_URL } from './constants';
 
 export interface ChatData {
   id: number;
@@ -30,8 +31,6 @@ export interface ChatUser {
   avatar: string | null;
   role: string;
 }
-
-const BASE_URL = 'https://ya-praktikum.tech/api/v2';
 
 class ChatAPIClass {
   private http = new HTTPTransport(BASE_URL);

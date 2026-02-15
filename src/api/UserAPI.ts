@@ -1,5 +1,6 @@
 import { HTTPTransport } from '../core/HTTPTransport';
 import { UserData } from './AuthAPI';
+import { BASE_URL } from './constants';
 
 export interface ProfileData {
   first_name: string;
@@ -14,8 +15,6 @@ export interface PasswordData {
   oldPassword: string;
   newPassword: string;
 }
-
-const BASE_URL = 'https://ya-praktikum.tech/api/v2';
 
 class UserAPIClass {
   private http = new HTTPTransport(BASE_URL);

@@ -5,10 +5,9 @@ import { Form } from '../../components/Form';
 import { Avatar } from '../../components/Avatar';
 import { AuthAPI, UserData } from '../../api/AuthAPI';
 import { UserAPI, ProfileData } from '../../api/UserAPI';
+import { RESOURCES_URL } from '../../api/constants';
 import '../../assets/scss/collect.scss';
 import './index.scss';
-
-const AVATAR_BASE_URL = 'https://ya-praktikum.tech/api/v2/resources';
 
 export class ProfileEditPage extends Block {
   private avatar: Avatar;
@@ -113,7 +112,7 @@ export class ProfileEditPage extends Block {
     try {
       const user = await UserAPI.updateAvatar(formData);
       if (user.avatar) {
-        this.avatar.setProps({ src: `${AVATAR_BASE_URL}${user.avatar}` });
+        this.avatar.setProps({ src: `${RESOURCES_URL}${user.avatar}` });
       }
     } catch (error) {
       console.error('Ошибка загрузки аватара:', error);
@@ -138,7 +137,7 @@ export class ProfileEditPage extends Block {
     this.inputs.phone.setValue(user.phone);
 
     if (user.avatar) {
-      this.avatar.setProps({ src: `${AVATAR_BASE_URL}${user.avatar}` });
+      this.avatar.setProps({ src: `${RESOURCES_URL}${user.avatar}` });
     }
   }
 

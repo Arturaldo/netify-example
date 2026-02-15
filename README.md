@@ -53,4 +53,4 @@ npm run validate     # Проверка типов + линтинг
 
 ## Деплой
 
-https://scintillating-strudel-fa2ed9.netlify.app
+Спринт 3: https://scintillating-strudel-fa2ed9.netlify.app
