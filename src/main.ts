@@ -1,22 +1,26 @@
 import './assets/scss/collect.scss';
 import '../index.scss';
+import { router } from './routes';
+import { AuthAPI } from './api/AuthAPI';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const app = document.querySelector('.app');
-  if (!app) return;
+const PUBLIC_ROUTES = ['/auth', '/register'];
 
-  app.innerHTML = `
-    <div class="main-page__container">
-      <h1>Мессенджер</h1>
+document.addEventListener('DOMContentLoaded', async () => {
+  const currentPath = window.location.pathname;
 
-      <nav class="main-page__container__form">
-        <a href="/src/pages/auth/index.html" class="main-page__container__form__submit">Вход</a>
-        <a href="/src/pages/register/index.html" class="main-page__container__form__submit">Регистрация</a>
-        <a href="/src/pages/chat/index.html" class="main-page__container__form__submit">Чат</a>
-        <a href="/src/pages/profile/index.html" class="main-page__container__form__submit">Настройки пользователя</a>
-        <a href="/src/pages/404/index.html" class="main-page__container__form__submit">404</a>
-        <a href="/src/pages/500/index.html" class="main-page__container__form__submit">500</a>
-      </nav>
-    </div>
-  `;
+  try {
+    await AuthAPI.getUser();
+
+    if (PUBLIC_ROUTES.includes(currentPath) || currentPath === '/') {
+      router.start();
+      router.go('/chat');
+    } else {
+      router.start();
+    }
+  } catch {
+    router.start();
+    if (!PUBLIC_ROUTES.includes(currentPath)) {
+      router.go('/auth');
+    }
+  }
 });

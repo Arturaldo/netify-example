@@ -19,7 +19,7 @@ export enum HTTPStatus {
 interface RequestOptions {
   method?: HTTPMethod;
   headers?: Record<string, string>;
-  data?: Record<string, unknown> | FormData;
+  data?: Record<string, unknown> | FormData | object;
   timeout?: number;
 }
 

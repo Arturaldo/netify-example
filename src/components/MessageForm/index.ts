@@ -44,7 +44,6 @@ export class MessageForm extends Block<MessageFormProps> {
     const result = validate('message', value);
 
     if (result.isValid) {
-      console.log('Отправка сообщения:', { message: value });
       if (this.props.onSubmit) {
         this.props.onSubmit(value);
       }
