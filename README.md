@@ -90,4 +90,4 @@ npm run prepare
 
 ## Деплой
 
-Спринт 3: https://deploy-preview-3--lively-crisp-459a46.netlify.app
+Спринт 4: https://deploy-preview-4--lively-crisp-459a46.netlify.app
