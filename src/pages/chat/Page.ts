@@ -6,6 +6,7 @@ import { ChatAPI, ChatData } from '../../api/ChatAPI';
 import { AuthAPI, UserData } from '../../api/AuthAPI';
 import { UserAPI } from '../../api/UserAPI';
 import { WebSocketTransport, WSMessage } from '../../core/WebSocketTransport';
+import { RESOURCES_URL } from '../../api/constants';
 import '../../assets/scss/collect.scss';
 import './index.scss';
 
@@ -126,10 +127,14 @@ export class ChatPage extends Block {
     const lastMsg = chat.last_message?.content || '';
     const time = chat.last_message ? this._formatTime(chat.last_message.time) : '';
 
+    const avatarHtml = chat.avatar
+      ? `<img src="${RESOURCES_URL}${chat.avatar}" alt="${chat.title}">`
+      : '<span class="avatar-placeholder"></span>';
+
     return `
       <a href="#" class="left-bar__content__mini-chat ${activeClass}" data-chat-id="${chat.id}">
         <div class="left-bar__content__mini-chat__avatar">
-          <span class="avatar-placeholder"></span>
+          ${avatarHtml}
         </div>
         <div class="left-bar__content__mini-chat__body">
           <div class="left-bar__content__mini-chat__name ${unreadClass}">
@@ -189,6 +194,12 @@ export class ChatPage extends Block {
     const nameEl = this.element?.querySelector('.chat__chat-name');
     if (nameEl) {
       nameEl.textContent = chat ? chat.title : '';
+    }
+    const avatarEl = this.element?.querySelector('.chat__chat-avatar');
+    if (avatarEl) {
+      avatarEl.innerHTML = chat?.avatar
+        ? `<img src="${RESOURCES_URL}${chat.avatar}" alt="${chat.title}">`
+        : '';
     }
   }
 
@@ -290,19 +301,78 @@ export class ChatPage extends Block {
     const removeBtn = this.element?.querySelector('[data-remove-user]');
     removeBtn?.addEventListener('click', async () => {
       if (!this.activeChatId) return;
-      const login = prompt('Логин пользователя для удаления:');
-      if (login) {
-        try {
-          const users = await UserAPI.searchUsers(login);
-          if (users.length > 0) {
-            await ChatAPI.removeUsers(this.activeChatId, [users[0].id]);
-            alert(`Пользователь ${users[0].login} удалён из чата`);
-          } else {
-            alert('Пользователь не найден');
-          }
-        } catch (error) {
-          console.error('Ошибка удаления пользователя:', error);
+      try {
+        const members = await ChatAPI.getChatUsers(this.activeChatId);
+        const others = members.filter((u) => u.id !== this.currentUser?.id);
+        if (others.length === 0) {
+          alert('В чате нет других участников');
+          return;
         }
+        const bodyHtml = others
+          .map(
+            (u) =>
+              `<div class="chat__user-item" data-user-id="${u.id}">
+                <span>${u.first_name} ${u.second_name}</span>
+                <span class="chat__user-login">@${u.login}</span>
+              </div>`,
+          )
+          .join('');
+        this._showModal('Удалить участника', bodyHtml);
+        this.element?.querySelectorAll('[data-user-id]').forEach((item) => {
+          item.addEventListener('click', async () => {
+            const userId = Number((item as HTMLElement).dataset.userId);
+            try {
+              await ChatAPI.removeUsers(this.activeChatId!, [userId]);
+              this._hideModal();
+            } catch (error) {
+              console.error('Ошибка удаления пользователя:', error);
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Ошибка загрузки участников чата:', error);
+      }
+    });
+  }
+
+  private _showModal(title: string, bodyHtml: string): void {
+    const overlay = this.element?.querySelector('[data-modal]') as HTMLElement;
+    const titleEl = this.element?.querySelector('[data-modal-title]');
+    const bodyEl = this.element?.querySelector('[data-modal-body]');
+    if (overlay && titleEl && bodyEl) {
+      titleEl.textContent = title;
+      bodyEl.innerHTML = bodyHtml;
+      overlay.style.display = 'flex';
+    }
+  }
+
+  private _hideModal(): void {
+    const overlay = this.element?.querySelector('[data-modal]') as HTMLElement;
+    if (overlay) overlay.style.display = 'none';
+  }
+
+  private _bindChatAvatarUpload(): void {
+    const avatarInput = this.element?.querySelector('[data-avatar-input]') as HTMLInputElement;
+    const avatarEl = this.element?.querySelector('.chat__chat-avatar');
+    avatarEl?.addEventListener('click', () => {
+      if (this.activeChatId) avatarInput?.click();
+    });
+    avatarInput?.addEventListener('change', async () => {
+      if (!avatarInput.files?.length || !this.activeChatId) return;
+      const formData = new FormData();
+      formData.append('chatId', String(this.activeChatId));
+      formData.append('avatar', avatarInput.files[0]);
+      try {
+        const updated = await ChatAPI.updateChatAvatar(formData);
+        const idx = this.chats.findIndex((c) => c.id === this.activeChatId);
+        if (idx !== -1) this.chats[idx] = updated;
+        this.filteredChats = [...this.chats];
+        this._updateChatList();
+        this._updateChatHeader();
+      } catch (error) {
+        console.error('Ошибка смены аватара чата:', error);
+      } finally {
+        avatarInput.value = '';
       }
     });
   }
@@ -382,6 +452,13 @@ export class ChatPage extends Block {
     this._bindRemoveUser();
     this._bindDeleteChat();
     this._bindSearchInput();
+    this._bindChatAvatarUpload();
+
+    const modalClose = this.element?.querySelector('[data-modal-close]');
+    modalClose?.addEventListener('click', () => this._hideModal());
+    this.element?.querySelector('[data-modal]')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) this._hideModal();
+    });
 
     try {
       this.currentUser = await AuthAPI.getUser();
@@ -420,7 +497,7 @@ export class ChatPage extends Block {
       <section class="chat__container__chat-content" style="display:none;">
         <header class="chat__container__chat-content__header">
           <div class="chat__chat-header-left">
-            <div class="chat__chat-avatar"></div>
+            <div class="chat__chat-avatar" title="Изменить аватар чата"></div>
             <div class="chat__chat-name"></div>
           </div>
           <div class="chat__chat-actions">
@@ -435,6 +512,18 @@ export class ChatPage extends Block {
 
         <footer class="chat__message-form-container"></footer>
       </section>
+
+      <div class="chat__modal-overlay" data-modal>
+        <div class="chat__modal">
+          <div class="chat__modal-header">
+            <span data-modal-title></span>
+            <button class="chat__modal-close" data-modal-close type="button">✕</button>
+          </div>
+          <div class="chat__modal-body" data-modal-body></div>
+        </div>
+      </div>
+
+      <input type="file" accept="image/*" data-avatar-input style="display:none;">
     `;
   }
 }
